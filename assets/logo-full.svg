@@ -1,0 +1,12 @@
+<svg viewBox="0 0 380 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="HATTA">
+  <g fill="#F4C027" transform="translate(140,8) scale(0.83)">
+    <rect x="10" y="14" width="18" height="92" rx="3"/>
+    <rect x="70" y="14" width="18" height="92" rx="3"/>
+    <rect x="22" y="53" width="70" height="13" rx="2"/>
+    <path d="M118 59.5 L92 44 L92 75 Z"/>
+    <rect x="43" y="31" width="12" height="24" rx="2"/>
+    <path d="M49 15 L34 34 L64 34 Z"/>
+  </g>
+  <text x="190" y="182" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="54" font-weight="800" letter-spacing="4" fill="#FFFFFF">HATTA</text>
+  <text x="190" y="212" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="12" font-weight="600" letter-spacing="4" fill="#9aa3b0">YARD &amp; DISPATCH MANAGEMENT</text>
+</svg>

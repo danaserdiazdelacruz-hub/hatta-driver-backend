@@ -1,0 +1,14 @@
+{
+  "name": "HATTA — Yard & Dispatch Management",
+  "short_name": "HATTA",
+  "description": "Sistema de gestión de patio y despacho de camiones.",
+  "theme_color": "#1b1e24",
+  "background_color": "#1b1e24",
+  "display": "standalone",
+  "start_url": "./index.html",
+  "icons": [
+    { "src": "favicon.svg", "type": "image/svg+xml", "sizes": "any" },
+    { "src": "assets/icon-192.png", "type": "image/png", "sizes": "192x192" },
+    { "src": "assets/icon-512.png", "type": "image/png", "sizes": "512x512", "purpose": "any maskable" }
+  ]
+}

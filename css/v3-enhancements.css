@@ -1,0 +1,486 @@
+/* ============================================================
+   V3.0 — ESTILOS ADICIONALES
+   Historial summary, card-view móvil, SLA dashboard, XLSX button
+   Se carga DESPUÉS de sistema.css (cascada)
+   ============================================================ */
+
+/* ---- HISTORIAL: Panel de resumen gerencial ---- */
+#hist-summary {
+  margin-bottom: 20px;
+  display: none;
+}
+.hist-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
+  gap: 12px;
+}
+.hs-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 1px 4px rgba(15,32,64,.07);
+  transition: transform .15s, box-shadow .15s;
+}
+.hs-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15,32,64,.12);
+}
+.hs-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--fs-kpi);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text);
+}
+.hs-val.dur-ok { color: var(--success); }
+.hs-val.dur-warn { color: var(--warning); }
+.hs-val.dur-danger { color: var(--danger); }
+.hs-lbl {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-top: 6px;
+  letter-spacing: .3px;
+}
+.hs-card.hs-sla {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, rgba(26,79,191,.04), rgba(26,79,191,.08));
+}
+
+/* ---- HISTORIAL: Vista CARD en móvil ---- */
+@media (max-width: 768px) {
+  .hist-card-row td {
+    padding: 0 !important;
+    border-bottom: none !important;
+    background: none !important;
+  }
+  .hist-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    margin: 0 0 10px;
+    box-shadow: 0 1px 4px rgba(15,32,64,.06);
+  }
+  .hc-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .hc-placa {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 800;
+    font-size: 15px;
+    color: var(--accent);
+  }
+  .hc-tx {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    background: var(--card);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .hc-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .hc-field {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .hc-field label {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  .hc-field span {
+    font-size: 13px;
+    color: var(--text);
+  }
+  .hc-times {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+  }
+  .hc-time {
+    flex: 1;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px 4px;
+    background: var(--card);
+  }
+  .hc-time label {
+    display: block;
+    font-size: 9px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 700;
+  }
+  .hc-time .mono {
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .hc-time .mono.strong {
+    font-size: 16px;
+  }
+  .hc-demora {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+  .hc-demora .mot-chip {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+
+  /* Ocultar thead en vista card */
+  #tabla-historial thead { display: none; }
+}
+
+/* ---- DASHBOARD: SLA KPI Panel ---- */
+#dash-sla-kpi {
+  margin-bottom: 20px;
+}
+.sla-dash-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 16px;
+}
+.sla-dash-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 4px rgba(15,32,64,.07);
+}
+.sla-dash-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+  letter-spacing: .5px;
+}
+.sla-bar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.sla-bar-label {
+  font-size: 12px;
+  color: var(--text-dim);
+  min-width: 52px;
+  font-weight: 600;
+}
+.sla-bar-track {
+  flex: 1;
+  height: 8px;
+  background: var(--card);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.sla-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width .6s ease;
+}
+.sla-bar-fill.ok { background: var(--success); }
+.sla-bar-fill.warn { background: var(--warning); }
+.sla-bar-fill.danger { background: var(--danger); }
+.sla-bar-pct {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  min-width: 38px;
+  text-align: right;
+}
+.sla-bar-pct.ok { color: var(--success); }
+.sla-bar-pct.warn { color: var(--warning); }
+.sla-bar-pct.danger { color: var(--danger); }
+.sla-dash-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.sla-dash-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 22px;
+  font-weight: 700;
+}
+.sla-dash-num.ok { color: var(--success); }
+.sla-dash-num.warn { color: var(--warning); }
+.sla-dash-num.danger { color: var(--danger); }
+.sla-dash-lbl {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+/* ---- HISTORIAL: Filtros de fecha ---- */
+.hist-date-filters {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+.hist-date-filters input[type="date"] {
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: inherit;
+  background: #fff;
+  color: var(--text);
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  transition: border-color .15s;
+}
+.hist-date-filters input[type="date"]:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(26,79,191,.12);
+}
+.hist-date-sep {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* ---- XLSX Export Button ---- */
+.btn-xlsx {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  background: #0d7c3f;
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(13,124,63,.25);
+  transition: background .15s, box-shadow .15s;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.btn-xlsx:hover {
+  background: #0a6332;
+  box-shadow: 0 2px 6px rgba(13,124,63,.35);
+}
+.btn-xlsx i {
+  width: 14px;
+  height: 14px;
+}
+
+/* ---- CSV export button secondary style ---- */
+.btn-csv {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  background: var(--panel);
+  color: var(--text-dim);
+  flex-shrink: 0;
+  white-space: nowrap;
+  transition: border-color .15s, color .15s;
+}
+.btn-csv:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ---- Historial table improvements ---- */
+.total-cell {
+  font-weight: 800 !important;
+  font-size: 14px !important;
+  background: rgba(26,79,191,.04) !important;
+}
+
+/* ---- Mobile date filter responsive ---- */
+@media (max-width: 500px) {
+  .hist-date-filters {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  .hist-date-filters input[type="date"] {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+/* ---- Improved toast animation ---- */
+.toast {
+  animation: toast-in .3s ease;
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ---- Improved transition on tab switch ---- */
+.tab-content.active {
+  animation: fade-in .2s ease;
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ---- Prioridad en patio (inline editable) ---- */
+.patio-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* ---- SLA compliance indicator in table ---- */
+.dur-ok { color: var(--success) !important; }
+.dur-warn { color: var(--warning) !important; }
+.dur-danger { color: var(--danger) !important; font-weight: 800; }
+
+/* ---- Better table hover on historial ---- */
+#tabla-historial tbody tr:hover td {
+  background: #e8f0ff !important;
+}
+
+/* ---- Keyboard shortcut hint ---- */
+.kbd-hint {
+  font-size: 10px;
+  color: var(--text-muted);
+  opacity: .6;
+  margin-left: 6px;
+}
+.kbd {
+  display: inline-block;
+  padding: 1px 5px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+/* ---- Loading state for exports ---- */
+.btn-xlsx.loading,
+.btn-csv.loading {
+  opacity: .7;
+  pointer-events: none;
+}
+
+/* ---- Print-friendly styles ---- */
+@media print {
+  .header, .tabs-nav, .modbar, .panel-header, .hist-pagination, .toast-container { display: none !important; }
+  body { background: #fff !important; }
+  .panel { box-shadow: none; border: 1px solid #ccc; }
+  table { font-size: 10px; }
+}
+
+/* ============================================================
+   LOGIN FORM — sobre la foto, mínimo
+   Solo: caja centrada en la zona vacía de la foto (debajo del logo).
+   Dos inputs + botón amarillo. Sin logo propio, sin título.
+   La foto ya los tiene.
+   ============================================================ */
+
+/* Posición: centrada horizontalmente, en la zona media-baja
+   donde la foto tiene espacio vacío */
+.login-box {
+  position: absolute;
+  bottom: 14%;       /* bien abajo, sin tapar el texto central */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(320px, 88vw);
+}
+
+/* Inputs: fondo semitransparente oscuro, borde sutil */
+.lf-input {
+  width: 100%;
+  height: 46px;
+  padding: 0 16px;
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 8px;
+  background: rgba(0,0,0,.45);
+  color: #fff;
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+  backdrop-filter: blur(6px);
+  box-sizing: border-box;
+  transition: border-color .2s, background .2s;
+}
+.lf-input::placeholder { color: rgba(255,255,255,.45); }
+.lf-input:focus {
+  border-color: rgba(255,255,255,.55);
+  background: rgba(0,0,0,.6);
+}
+
+/* Error */
+.lf-error {
+  font-size: 13px;
+  color: #ff8080;
+  text-align: center;
+  margin: 0;
+  padding: 7px 12px;
+  background: rgba(180,30,30,.25);
+  border: 1px solid rgba(220,38,38,.35);
+  border-radius: 7px;
+  display: none;
+}
+.lf-shake { animation: lf-shake .35s ease; }
+@keyframes lf-shake {
+  0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)}
+  40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)}
+}
+
+/* Botón Ingresar — amarillo, letras blancas */
+.lf-btn {
+  width: 100%;
+  height: 48px;
+  background: #f5a800;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+  letter-spacing: .3px;
+  transition: background .15s, transform .1s;
+  margin-top: 2px;
+}
+.lf-btn:hover  { background: #d99200; }
+.lf-btn:active { transform: scale(.98); background: #c28200; }
+
+/* Login-screen necesita position:relative para el absolute del box */
+.login-screen { position: relative; }
