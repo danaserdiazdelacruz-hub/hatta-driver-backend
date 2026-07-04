@@ -1,0 +1,709 @@
+/* ============================================================
+   SISTEMA — Capa responsive unificada (carga DESPUÉS de
+   base · components · modules; sobreescribe por cascada).
+   No cambia la identidad HATTA: solo introduce ESCALA,
+   FLUIDEZ y objetivos TÁCTILES para que la mayoría de los
+   breakpoints sueltos dejen de hacer falta.
+
+   Mobile-first: el uso diario es Garita/Despacho (táctil).
+   El Dashboard escala hacia arriba solo (clamp + auto-fit).
+
+   Breakpoints únicos del sistema:
+     · móvil    ≤ 600px
+     · tablet   ≤ 900px
+     · wallboard (TV) se maneja con .tv-mode existente
+   ============================================================ */
+
+/* ---- 1. TOKENS: espaciado, radios y tipografía fluida ----
+   Una sola fuente de verdad. La tipografía escala con el ancho
+   del viewport, no con media queries. */
+:root{
+  /* escala de espaciado */
+  --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:24px; --s-6:32px;
+  /* padding de página, respira en móvil y no se desborda en TV */
+  --pad-main:clamp(12px, 3.5vw, 24px);
+  /* radios */
+  --r-sm:6px; --r-md:8px; --r-lg:12px;
+  /* tipografía fluida (min, preferido, max) */
+  --fs-xs:clamp(.69rem, .66rem + .15vw, .75rem);
+  --fs-sm:clamp(.81rem, .78rem + .18vw, .88rem);
+  --fs-base:clamp(.94rem, .9rem + .2vw, 1rem);
+  --fs-lg:clamp(1.05rem, .95rem + .55vw, 1.4rem);
+  --fs-kpi:clamp(1.7rem, 1.15rem + 2.4vw, 2rem);
+  --fs-kpi-mini:clamp(1.35rem, 1rem + 1.6vw, 1.625rem);
+  /* objetivo táctil mínimo (dedo) */
+  --tap:44px;
+}
+
+body{ font-size:var(--fs-base); }
+
+/* ---- 2. LAYOUT DE PÁGINA fluido ---- */
+.main{ padding:var(--pad-main); }
+.header{ padding:0 var(--pad-main); }
+
+/* ---- 3. GRIDS INTRÍNSECOS ----
+   auto-fit + minmax: colapsan solos según el ancho disponible,
+   sin que definamos a qué pantalla. Reemplaza columnas fijas +
+   media queries por componente. El min(100%, X) evita desborde
+   en móvil cuando una sola columna ya no cabe en X. */
+.grid-2{ grid-template-columns:repeat(auto-fit, minmax(min(100%, 280px), 1fr)); }
+.grid-3{ grid-template-columns:repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
+.grid-4{ grid-template-columns:repeat(auto-fit, minmax(min(100%, 180px), 1fr)); }
+.form-row{ grid-template-columns:repeat(auto-fit, minmax(min(100%, 200px), 1fr)); }
+
+/* Mapa de 60 rampas: una sola regla fluida en vez de 3 breakpoints.
+   La celda mide entre 44px (táctil en móvil) y 56px (desktop). */
+.dock-grid{ grid-template-columns:repeat(auto-fill, minmax(clamp(44px, 12vw, 56px), 1fr)); }
+
+/* ---- 4. TIPOGRAFÍA de cifras grandes (no se desbordan en móvil) ---- */
+.kpi-value{ font-size:var(--fs-kpi); }
+.kpi-mini-value{ font-size:var(--fs-kpi-mini); }
+.kpi-card{ padding:clamp(14px, 3vw, 20px); }
+.dr-rampa{ font-size:clamp(48px, 16vw, 72px); }
+
+/* ---- 5. OBJETIVOS TÁCTILES + fix de zoom en iOS ----
+   iOS hace zoom al enfocar inputs < 16px: forzamos 16px.
+   Botones e inputs alcanzan el mínimo de 44px para el dedo. */
+.form-input,
+select.form-input,
+textarea.form-input,
+.driver-input{ font-size:16px; }
+
+.form-input,
+select.form-input{ min-height:var(--tap); }
+
+.btn{ min-height:var(--tap); }
+.btn-ghost{ min-height:40px; }
+.btn-sm{ min-height:36px; }           /* secundarios en tablas: densos a propósito */
+.tab-btn{ min-height:var(--tap); }
+.check-item{ min-height:var(--tap); }
+.login-btn{ min-height:64px; }
+
+/* ---- 6. CABECERA en móvil ----
+   Los 3 KPIs del header ya viven como tarjetas en el Dashboard,
+   así que en móvil dejamos solo identidad + usuario + salir. */
+@media (max-width:600px){
+  .header-stats{ gap:var(--s-2); }
+  .header-stats .stat-item:not(.user-badge){ display:none; }
+  .header-stats .stat-item.user-badge{ min-width:0; padding:6px 10px; }
+  .logo{ font-size:1.15rem; }
+  .logo .ver{ display:none; }
+}
+
+/* ---- 7. TOASTS a ancho completo en móvil (no se salen) ---- */
+@media (max-width:600px){
+  #toast-container{ left:var(--s-3); right:var(--s-3); bottom:var(--s-3); }
+  .toast{ min-width:0; width:100%; }
+}
+
+/* ---- 8. AJUSTES tablet (lo que el layout intrínseco no cubre) ----
+   Las tablas densas (Historial/Maestro) ya scrollean dentro de
+   .panel-body.flush; aquí solo aseguramos que el detalle de
+   transacción en Garita y los formularios respiren. */
+@media (max-width:900px){
+  .panel-body{ padding:var(--s-4); }
+}
+
+/* ---- 9. Calidad base: respetar reduce-motion ----
+   El badge de prioridad URGENTE pulsa; lo detenemos para quien
+   pide menos movimiento (accesibilidad y mareo). */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+  }
+}
+
+/* ============================================================
+   MODBAR — Barra de módulo estandarizada
+   Reemplaza panel-header + sec-head + sec-tools en secciones
+   operativas (Patio, Despacho).
+
+   Anatomía de dos líneas:
+     Línea 1: etiqueta discreta + badge de conteo
+     Línea 2: búsqueda (ancho flex) + filtros + acción
+
+   Principio: el operador encuentra los controles siempre
+   en el mismo lugar, con las mismas alturas, sin importar
+   en qué módulo esté. Una regla → todo coherente.
+   ============================================================ */
+
+/* ---- Contenedor principal ---- */
+.modbar {
+  padding: 10px 16px 10px;
+  background: linear-gradient(180deg,#eef2fa,#e5ecf6);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Variante compacta (paneles secundarios: Disponibles, Esperando salida) */
+.modbar.modbar--sm {
+  padding: 8px 14px;
+  gap: 6px;
+}
+
+/* ---- Línea 1: etiqueta + contador ---- */
+.modbar-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.modbar-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--text-dim);
+}
+.modbar--sm .modbar-label {
+  font-size: 10px;
+}
+
+/* Contador: pequeño badge, no protagonista */
+.modbar-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  background: rgba(26,79,191,.12);
+  color: var(--accent);
+  line-height: 1;
+}
+.modbar-count--warn {
+  background: rgba(180,83,9,.12);
+  color: var(--warning);
+}
+.modbar-count--ok {
+  background: rgba(21,128,61,.12);
+  color: var(--success);
+}
+
+/* ---- Línea 2: controles horizontales ---- */
+.modbar-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+/* Buscador: ocupa todo el espacio sobrante */
+.modbar-search {
+  /* Flex row: [lupa] [input] en la misma línea, sin position:absolute */
+  display: flex;
+  align-items: center;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  padding: 0 8px 0 10px;
+  gap: 7px;
+  transition: border-color .15s, box-shadow .15s;
+}
+.modbar-search:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(26,79,191,.12);
+}
+.modbar-search > i {
+  /* Lupa inline — nunca se separa del input */
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  color: var(--text-muted);
+  pointer-events: none;
+  display: block;
+}
+.modbar-search input {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--text);
+  padding: 0;
+}
+.modbar-search input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Selectores (filtro tipo, cantidad): fijos, sin stretching */
+.modbar-sel {
+  height: 32px;
+  padding: 0 28px 0 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: inherit;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%233d5475' stroke-width='2'%3E%3Cpolyline points='6,9 12,15 18,9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 6px center / 14px;
+  color: var(--text);
+  -webkit-appearance: none;
+  appearance: none;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: border-color .15s;
+}
+.modbar-sel:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(26,79,191,.12);
+}
+/* Selector de tipo de vehículo: un poco más ancho que el de cantidad */
+#despacho-filtro-veh,
+.modbar-veh-wrap .filtro-veh-sel {
+  min-width: 90px;
+  max-width: 120px;
+}
+/* Selector de cantidad: compacto */
+#lote-rampa-n,
+#lote-patio-n {
+  width: 58px;
+}
+
+/* ---- Botón de acción principal ---- */
+.modbar-btn {
+  height: 32px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background .15s, box-shadow .15s;
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(26,79,191,.2);
+}
+.modbar-btn > i {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+.modbar-btn:hover {
+  background: #163fa0;
+  box-shadow: 0 2px 6px rgba(26,79,191,.3);
+}
+.modbar-btn:active {
+  background: #12348a;
+}
+/* Variante secundaria (Patio: "Disponible") */
+.modbar-btn.modbar-btn--secondary {
+  background: #fff;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  box-shadow: none;
+}
+.modbar-btn.modbar-btn--secondary:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Envoltorio del filtro de vehículo generado por JS */
+.modbar-veh-wrap {
+  flex-shrink: 0;
+}
+/* El select generado por patio.js hereda estilos modbar-sel */
+.modbar-veh-wrap .filtro-veh-sel {
+  height: 32px;
+  padding: 0 24px 0 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: inherit;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%233d5475' stroke-width='2'%3E%3Cpolyline points='6,9 12,15 18,9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 6px center / 14px;
+  color: var(--text);
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  min-width: 86px;
+  max-width: 110px;
+  transition: border-color .15s;
+}
+.modbar-veh-wrap .filtro-veh-sel:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(26,79,191,.12);
+}
+
+/* ---- Responsive: en paneles angostos la línea 2 envuelve ---- */
+@media (max-width: 500px) {
+  .modbar-controls { flex-wrap: wrap; }
+  .modbar-search { flex-basis: 100%; }
+  .modbar-search--pill { flex: 1 1 100%; max-width: 100%; }
+}
+
+/* ---- Compatibilidad: panel sin modbar usa el header original ---- */
+/* (Garita, Historial, Maestro, Dashboard no cambian) */
+
+
+/* ---- Variantes adicionales de modbar ---- */
+
+/* Historial: modbar flotante sobre el panel (no dentro de un panel) */
+.modbar.modbar--hist {
+  background: var(--bg);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  padding: 12px 0 10px;
+}
+/* El buscador del historial ocupa todo el ancho disponible */
+.modbar-search.modbar-search--full {
+  /* En modbar-controls: flex:1 para tomar espacio sobrante */
+  flex: 1 1 0;
+}
+/* En modbar--stack (hijo directo de modbar): ancho completo */
+.modbar--stack > .modbar-search,
+.modbar--stack > .modbar-search--full {
+  width: 100%;
+  flex: none;
+}
+/* Botón limpiar dentro del buscador */
+.modbar-clear {
+  /* Con el nuevo flex inline, el clear va al final del row naturalmente */
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--text-muted);
+  display: none;
+  line-height: 1;
+  padding: 0;
+}
+.modbar-clear:hover { color: var(--danger); }
+
+/* Bitácora: sin fondo propio, vive dentro del settings-panel */
+.modbar.modbar--flush {
+  background: none;
+  border-bottom: 1px solid var(--border);
+  padding: 0 0 10px;
+  margin-bottom: 12px;
+}
+
+/* Botón ícono compacto (CSV) */
+.modbar-btn.modbar-btn--icon {
+  padding: 0 12px;
+  gap: 5px;
+  font-size: 12px;
+}
+.modbar-btn.modbar-btn--icon > i {
+  width: 13px;
+  height: 13px;
+}
+
+/* Panel-header del Historial (Registros + badge) */
+#tab-historial .panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#tab-historial .panel-header .modbar-count {
+  color: var(--accent);
+}
+
+/* 360: buscador de ancho completo en la barra */
+#tab-360 .modbar-search { flex: 1; }
+
+/* Garita: el panel-header original es correcto (seg-btn Entrada/Salida).
+   No necesita modbar — es un selector de modo, no un buscador. */
+
+/* Dashboard: dash-toolbar ya está bien — h2 + botón TV.
+   Solo estandarizar la altura del botón TV */
+.dash-toolbar .btn-ghost {
+  height: 32px;
+  font-size: 12px;
+}
+.dash-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* ============================================================
+   MODBAR VARIANTES — Despacho (stack 3 filas) + 360 (compacto)
+   ============================================================ */
+
+/* --- modbar--stack: 3 filas verticales ---
+   Fila 1: título + badge (ya existe en modbar-title)
+   Fila 2: buscador full-width
+   Fila 3: selectores + botón alineados
+   Resolución del problema: el buscador tiene TODO el ancho,
+   los controles van en su propia fila sin competir por espacio.  */
+.modbar--stack {
+  gap: 7px;
+}
+/* La fila 2 (buscador) ya usa modbar-search--full — sin cambios */
+/* Fila 3: fila de controles de acción */
+.modbar-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+/* El selector de tipo en la fila de acción ocupa el espacio restante */
+.modbar-sel--grow {
+  flex: 1 1 0;
+  min-width: 0;
+  /* quitar max-width anterior que tenía 120px */
+  max-width: none;
+}
+/* Despacho: quitar el override anterior que limitaba el filtro-veh */
+#despacho-filtro-veh {
+  min-width: 0;
+  max-width: none;
+  flex: 1 1 0;
+}
+
+/* --- modbar--360: barra de vista 360 ---
+   El buscador y el selector de estado van en la misma fila,
+   buscador flex, selector fijo.  */
+.modbar--360 {
+  padding: 10px 16px;
+  gap: 8px;
+}
+.modbar--360 .modbar-controls {
+  gap: 8px;
+}
+
+/* Buscador pill: más corto, bordes redondeados, no rectangular */
+.modbar-search--pill {
+  flex: 0 1 260px;
+  max-width: 260px;
+  height: 34px;
+  border-radius: 17px;
+  background: var(--card, #f0f2f5);
+  border: 1px solid var(--border);
+  padding: 0 14px 0 14px;
+  gap: 8px;
+  transition: all .2s ease;
+}
+.modbar-search--pill:focus-within {
+  border-color: var(--accent);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(26,79,191,.10);
+  max-width: 320px;
+}
+.modbar-search--pill input {
+  font-size: 13px;
+}
+
+.modbar-sel--estado {
+  flex-shrink: 0;
+  min-width: 110px;
+  max-width: 130px;
+}
+.modbar-sel--tipoveh {
+  flex-shrink: 0;
+  min-width: 120px;
+  max-width: 145px;
+}
+
+/* Asegurar que modbar-search--full dentro de modbar-controls
+   también se comporta como flex:1 */
+/* modbar-search--full en controles — heredado del flex:1 del modbar-search */
+
+
+/* ============================================================
+   FASE 1 — Motor de catálogos (Maestro)
+   ============================================================ */
+.cat-chip { cursor: pointer; display: inline-flex; align-items: center; gap: 6px; border: 1px solid transparent; }
+.cat-chip.active { outline: 2px solid var(--accent, #f59e0b); }
+.cat-chip i { width: 14px; height: 14px; }
+tr.cat-inactivo td { opacity: .45; }
+
+/* ============================================================
+   HISTORIAL — tabla ancha: rotor lateral + encabezado fijo
+   ============================================================ */
+.hist-scroll { overflow: auto; scrollbar-width: thin; }
+.hist-scroll::-webkit-scrollbar { height: 10px; }
+.hist-scroll::-webkit-scrollbar-thumb { background: var(--accent, #f59e0b); border-radius: 6px; }
+.hist-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,.06); }
+.hist-table thead th { position: sticky; top: 0; z-index: 3; background: var(--bg-panel, #1e293b); }
+.hist-table .fecha-cell { white-space: nowrap; font-weight: 600; }
+.hist-table td, .hist-table th { white-space: nowrap; }
+.hist-xnav { display: inline-flex; gap: 4px; margin-left: 10px; }
+.hist-xnav .btn { padding: 2px 8px; }
+
+/* Dashboard — tabla ancha con rotor */
+.table-xscroll { overflow-x: auto; scrollbar-width: thin; }
+.table-xscroll::-webkit-scrollbar { height: 8px; }
+.table-xscroll::-webkit-scrollbar-thumb { background: var(--accent, #f59e0b); border-radius: 6px; }
+
+/* ============================================================
+   GARITA v2 — placa protagonista, banner, salida de un toque
+   ============================================================ */
+/* Campo de placa: grande, tipo matrícula */
+#tab-garita .placa-input {
+  font-size: clamp(22px, 4vw, 30px); font-weight: 800; letter-spacing: 3px;
+  text-transform: uppercase; text-align: center; font-family: ui-monospace, Consolas, monospace;
+  min-height: 56px; margin: 4px 0 2px;
+}
+/* Pre-chequeo en vivo */
+.garita-precheck { min-height: 22px; font-size: 13.5px; padding: 3px 2px 8px; font-weight: 600; }
+.garita-precheck.ok { color: var(--success, #22c55e); }
+.garita-precheck.warn { color: var(--warning, #f59e0b); }
+.garita-precheck.neutral { color: var(--muted, #94a3b8); font-weight: 400; }
+
+/* Banner de resultado — dominante, arriba del módulo */
+.garita-banner {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 20px; border-radius: 12px; margin-bottom: 14px;
+  border: 1px solid transparent; animation: bannerIn .18s ease-out;
+}
+.garita-banner i { width: 34px; height: 34px; flex: none; }
+.garita-banner strong { display: block; font-size: clamp(18px, 3vw, 24px); letter-spacing: .5px; }
+.garita-banner span { opacity: .85; font-size: 14px; }
+.garita-banner.in  { background: rgba(34,197,94,.14);  border-color: rgba(34,197,94,.5);  color: #4ade80; }
+.garita-banner.out { background: rgba(59,130,246,.14); border-color: rgba(59,130,246,.5); color: #60a5fa; }
+.garita-banner.warn{ background: rgba(245,158,11,.14); border-color: rgba(245,158,11,.55); color: #fbbf24; }
+@keyframes bannerIn { from { transform: translateY(-6px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* Clasificación colapsable */
+.gm-clasif { margin-top: 8px; border: 1px solid rgba(255,255,255,.08); border-radius: 10px; }
+.gm-clasif-toggle {
+  width: 100%; display: flex; justify-content: space-between; align-items: center;
+  background: transparent; border: 0; color: inherit; cursor: pointer;
+  padding: 10px 12px; font-size: 13.5px; font-weight: 600; min-height: 44px;
+}
+.gm-clasif.colapsada .gm-clasif-toggle i { transform: rotate(-90deg); }
+.gm-clasif-toggle i { transition: transform .15s; width: 16px; height: 16px; }
+.gm-clasif-body { padding: 0 12px 12px; }
+
+/* Rechazo por chips */
+.gm-rechazo-chips { margin-top: 12px; padding: 12px; border: 1px dashed rgba(239,68,68,.5); border-radius: 10px; }
+.gm-rechazo-chips .chips-wrap { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.chip-rechazo { border-color: rgba(239,68,68,.55) !important; }
+.chip-rechazo:hover { background: rgba(239,68,68,.18); }
+.chip-cancel { opacity: .7; }
+
+/* Salida de un toque */
+.gs-listos-head { display: flex; align-items: center; gap: 8px; font-weight: 700; margin: 16px 0 8px; }
+.gs-listos-head i { width: 18px; height: 18px; }
+.gs-listos { display: flex; flex-direction: column; gap: 8px; max-height: 420px; overflow-y: auto; }
+.gs-item {
+  display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 12px;
+  width: 100%; text-align: left; padding: 12px 14px; min-height: 56px;
+  background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.35);
+  border-radius: 10px; color: inherit; cursor: pointer; transition: background .12s;
+}
+.gs-item:hover { background: rgba(59,130,246,.18); }
+.gs-item .gs-placa { font-size: 18px; font-weight: 800; letter-spacing: 1.5px; }
+.gs-item .gs-meta { opacity: .75; font-size: 12.5px; }
+.gs-item .gs-tiempo { font-size: 12px; opacity: .6; white-space: nowrap; }
+.gs-item i { width: 18px; height: 18px; color: #60a5fa; }
+
+/* Contadores/filtros del log */
+.garita-log-stats { display: flex; gap: 8px; flex-wrap: wrap; padding: 10px 14px 2px; }
+.glstat {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 40px;
+  padding: 6px 12px; border-radius: 999px; font-size: 12.5px; cursor: pointer;
+  background: transparent; color: inherit; border: 1px solid rgba(255,255,255,.14);
+}
+.glstat i { width: 14px; height: 14px; }
+.glstat strong { font-size: 14px; }
+.glstat.on { border-color: var(--accent, #f59e0b); background: rgba(245,158,11,.12); }
+.glstat.in.on  { border-color: #22c55e; background: rgba(34,197,94,.12); }
+.glstat.out.on { border-color: #3b82f6; background: rgba(59,130,246,.12); }
+.glstat.rej.on { border-color: #ef4444; background: rgba(239,68,68,.12); }
+
+/* Tallas táctiles del módulo (tablet en garita) */
+#tab-garita .form-input, #tab-garita select { min-height: 48px; }
+#tab-garita .btn { min-height: 48px; }
+#tab-garita .acc-method { min-height: 48px; }
+#tab-garita .chip { min-height: 44px; padding: 8px 14px; }
+
+/* ============================================================
+   MAESTRO v2 — portada en tarjetas + color por sección
+   ============================================================ */
+.maestro-hub { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.hub-card {
+  display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 14px;
+  padding: 18px; min-height: 92px; text-align: left; cursor: pointer;
+  background: color-mix(in srgb, var(--secc) 7%, transparent);
+  border: 1px solid color-mix(in srgb, var(--secc) 35%, transparent);
+  border-left: 4px solid var(--secc);
+  border-radius: 12px; color: inherit; transition: background .12s, transform .12s;
+}
+.hub-card:hover { background: color-mix(in srgb, var(--secc) 14%, transparent); transform: translateY(-2px); }
+.hub-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--secc) 18%, transparent); color: var(--secc); }
+.hub-icon i { width: 22px; height: 22px; }
+.hub-info strong { display: block; font-size: 15.5px; }
+.hub-desc { font-size: 12.5px; opacity: .65; }
+.hub-count { font-size: 12px; font-weight: 700; color: var(--secc); white-space: nowrap; }
+.hub-go { width: 16px; height: 16px; opacity: .4; }
+
+/* Breadcrumb */
+.maestro-breadcrumb { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-weight: 700; }
+.maestro-breadcrumb i { width: 14px; height: 14px; opacity: .5; }
+
+/* Color de identidad en nav y panel activo */
+.settings-nav-item[data-sec="rampas"]    { --secc: #f59e0b; }
+.settings-nav-item[data-sec="catalogos"] { --secc: #22c55e; }
+.settings-nav-item[data-sec="usuarios"]  { --secc: #3b82f6; }
+.settings-nav-item[data-sec="flujo"]     { --secc: #a78bfa; }
+.settings-nav-item[data-sec="bitacora"]  { --secc: #2dd4bf; }
+.settings-nav-item[data-sec="sistema"]   { --secc: #ef4444; }
+.settings-nav-item { border-left: 3px solid transparent; }
+.settings-nav-item.active {
+  border-left-color: var(--secc, var(--accent));
+  background: color-mix(in srgb, var(--secc, #f59e0b) 12%, transparent);
+}
+.settings-nav-item.active i { color: var(--secc, var(--accent)); }
+.settings-panel[data-sec="rampas"]    { --secc: #f59e0b; }
+.settings-panel[data-sec="catalogos"] { --secc: #22c55e; }
+.settings-panel[data-sec="usuarios"]  { --secc: #3b82f6; }
+.settings-panel[data-sec="flujo"]     { --secc: #a78bfa; }
+.settings-panel[data-sec="bitacora"]  { --secc: #2dd4bf; }
+.settings-panel[data-sec="sistema"]   { --secc: #ef4444; }
+.settings-panel.active { border-top: 3px solid var(--secc, transparent); border-radius: 4px 4px 0 0; }
+.bloque-sub { margin: 14px 0 10px; opacity: .85; }
+
+/* ============================================================
+   ADMINISTRADOR DE ACCESO
+   ============================================================ */
+.acceso-user { border: 1px solid rgba(255,255,255,.09); border-radius: 12px; padding: 14px 16px; margin-bottom: 12px; }
+.acceso-user.inactivo { opacity: .45; }
+.acceso-user-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.acceso-user-id { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.acceso-user-id strong { font-size: 15px; }
+.yo-pill { font-size: 10.5px; padding: 2px 8px; border-radius: 999px; background: rgba(59,130,246,.2); color: #93c5fd; font-weight: 700; }
+.acceso-user-mods { display: flex; flex-wrap: wrap; gap: 8px; }
+.mod-chip {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 42px;
+  padding: 7px 13px; border-radius: 999px; font-size: 12.5px; font-weight: 600; cursor: pointer;
+  background: transparent; color: inherit; opacity: .5;
+  border: 1.5px solid rgba(255,255,255,.18); transition: all .12s;
+}
+.mod-chip i { width: 15px; height: 15px; }
+.mod-chip.on {
+  opacity: 1; color: var(--modc);
+  border-color: var(--modc);
+  background: color-mix(in srgb, var(--modc) 13%, transparent);
+}
+.mod-chip.lock { opacity: .25; cursor: not-allowed; }
+.mod-chip:not(.lock):hover { opacity: 1; border-color: var(--modc); }
+
+/* Guía de alta */
+.alta-guia summary { display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 700; min-height: 44px; }
+.alta-guia summary i { width: 16px; height: 16px; }
+.alta-pasos { margin: 10px 0 12px 18px; display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; }
